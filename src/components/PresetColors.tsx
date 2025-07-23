@@ -62,13 +62,13 @@ export default function PresetColors({ onColorSelect, selectedColor, className =
           return (
             <div
               key={name}
-              className="group relative cursor-pointer"
+              className="group relative cursor-pointer flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
               onClick={() => handleColorSelect(color)}
               title={`${label} (${color})`}
             >
               {/* 颜色圆形按钮 */}
               <div
-                className={`w-12 h-12 rounded-full border-4 transition-all duration-200 hover:scale-110 ${
+                className={`w-10 h-10 rounded-full border-3 transition-all duration-200 hover:scale-110 flex-shrink-0 ${
                   selected 
                     ? 'border-blue-500 dark:border-blue-400 shadow-lg scale-110' 
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
@@ -78,17 +78,17 @@ export default function PresetColors({ onColorSelect, selectedColor, className =
                 {/* 选中状态指示器 */}
                 {selected && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+                    <div className="w-2.5 h-2.5 bg-white rounded-full shadow-sm" />
                   </div>
                 )}
               </div>
               
               {/* 颜色名称 */}
-              <div className="mt-2 text-center">
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-200">
+              <div className="flex-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-200 block">
                   {label}
                 </span>
-                <div className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
                   {color}
                 </div>
               </div>
