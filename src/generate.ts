@@ -89,6 +89,151 @@ interface Opts {
   backgroundColor?: string;
 }
 
+/**
+ * 从暗色主题调色板反推原始颜色
+ * @param darkColor 暗色主题中的颜色
+ * @param darkIndex 该颜色在暗色调色板中的索引 (0-9)
+ * @param backgroundColor 暗色主题背景色
+ * @returns 反推出的原始seed颜色
+ */
+export function reverseDarkColor(darkColor: ColorInput, darkIndex: number, backgroundColor: string = '#141414'): string {
+  const darkColorObj = new FastColor(darkColor);
+  const bgColor = new FastColor(backgroundColor);
+  
+  // 获取对应的映射关系
+  const mapping = darkColorMap[darkIndex];
+  if (!mapping) {
+    throw new Error('Invalid dark color index');
+  }
+  
+  // 反向计算：从混合色中提取原始色
+  // darkColor = backgroundColor.mix(originalColor, amount)
+  // 需要解出 originalColor
+  const amount = mapping.amount / 100;
+  
+  // 使用颜色混合的逆运算
+  // mixed = bg * (1 - amount) + original * amount
+  // original = (mixed - bg * (1 - amount)) / amount
+  
+  const darkRgb = darkColorObj.toRgb();
+  const bgRgb = bgColor.toRgb();
+  
+  const originalR = Math.round((darkRgb.r - bgRgb.r * (1 - amount)) / amount);
+  const originalG = Math.round((darkRgb.g - bgRgb.g * (1 - amount)) / amount);
+  const originalB = Math.round((darkRgb.b - bgRgb.b * (1 - amount)) / amount);
+  
+  // 边界值处理
+  const clampedR = Math.max(0, Math.min(255, originalR));
+  const clampedG = Math.max(0, Math.min(255, originalG));
+  const clampedB = Math.max(0, Math.min(255, originalB));
+  
+  const originalColor = new FastColor({ r: clampedR, g: clampedG, b: clampedB });
+  
+  // 这个颜色是浅色调色板中对应索引的颜色，需要反推到seed颜色
+  const lightIndex = mapping.index;
+  
+  // 如果是主色（索引5），直接返回
+  if (lightIndex === 5) {
+    return originalColor.toHexString();
+  }
+  
+  // 否则需要反推到主色
+  return reverseLightColor(originalColor.toHexString(), lightIndex);
+}
+
+/**
+ * 从浅色调色板中的某个颜色反推主色
+ * @param lightColor 浅色调色板中的颜色
+ * @param lightIndex 该颜色在浅色调色板中的索引 (0-9)
+ * @returns 反推出的主色
+ */
+export function reverseLightColor(lightColor: ColorInput, lightIndex: number): string {
+  const color = new FastColor(lightColor);
+  const hsv = color.toHsv();
+  
+  // 如果就是主色（索引5），直接返回
+  if (lightIndex === 5) {
+    return color.toHexString();
+  }
+  
+  let targetHsv = { ...hsv };
+  
+  if (lightIndex < 5) {
+    // 浅色部分，需要反推到主色
+    const steps = 5 - lightIndex;
+    
+    // 反向计算色相
+    if (Math.round(hsv.h) >= 60 && Math.round(hsv.h) <= 240) {
+      targetHsv.h = hsv.h + hueStep * steps;
+    } else {
+      targetHsv.h = hsv.h - hueStep * steps;
+    }
+    
+    // 处理色相边界
+    if (targetHsv.h < 0) {
+      targetHsv.h += 360;
+    } else if (targetHsv.h >= 360) {
+      targetHsv.h -= 360;
+    }
+    
+    // 反向计算饱和度
+    if (hsv.h === 0 && hsv.s === 0) {
+      // 灰色不变
+      targetHsv.s = hsv.s;
+    } else {
+      targetHsv.s = hsv.s + saturationStep * steps;
+      targetHsv.s = Math.max(0.06, Math.min(1, targetHsv.s));
+    }
+    
+    // 反向计算亮度
+    targetHsv.v = hsv.v - brightnessStep1 * steps;
+    targetHsv.v = Math.max(0, Math.min(1, targetHsv.v));
+    
+  } else {
+    // 深色部分，需要反推到主色
+    const steps = lightIndex - 5;
+    
+    // 反向计算色相
+    if (Math.round(hsv.h) >= 60 && Math.round(hsv.h) <= 240) {
+      targetHsv.h = hsv.h - hueStep * steps;
+    } else {
+      targetHsv.h = hsv.h + hueStep * steps;
+    }
+    
+    // 处理色相边界
+    if (targetHsv.h < 0) {
+      targetHsv.h += 360;
+    } else if (targetHsv.h >= 360) {
+      targetHsv.h -= 360;
+    }
+    
+    // 反向计算饱和度
+    if (hsv.h === 0 && hsv.s === 0) {
+      // 灰色不变
+      targetHsv.s = hsv.s;
+    } else {
+      if (steps === darkColorCount) {
+        targetHsv.s = hsv.s - saturationStep;
+      } else {
+        targetHsv.s = hsv.s - saturationStep2 * steps;
+      }
+      targetHsv.s = Math.max(0.06, Math.min(1, targetHsv.s));
+    }
+    
+    // 反向计算亮度
+    targetHsv.v = hsv.v + brightnessStep2 * steps;
+    targetHsv.v = Math.max(0, Math.min(1, targetHsv.v));
+  }
+  
+  const targetColor = new FastColor({
+    h: Math.round(targetHsv.h),
+    s: Math.round(targetHsv.s * 100) / 100,
+    v: Math.round(targetHsv.v * 100) / 100,
+  });
+  
+  return targetColor.toHexString();
+}
+
 export default function generate(color: ColorInput, opts: Opts = {}): string[] {
   const patterns: FastColor[] = [];
   const pColor = new FastColor(color);

@@ -1,51 +1,45 @@
 {
-  "name": "@ant-design/colors",
-  "version": "8.0.0",
-  "description": "Color palettes calculator of Ant Design",
-  "homepage": "https://github.com/ant-design/ant-design-colors#readme",
-  "bugs": {
-    "url": "https://github.com/ant-design/ant-design-colors/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ant-design/ant-design-colors.git"
-  },
-  "license": "MIT",
-  "author": "afc163 <afc163@gmail.com>",
-  "main": "./lib/index",
-  "module": "./es/index",
-  "typings": "es/index.d.ts",
-  "files": [
-    "lib",
-    "es"
-  ],
+  "name": "ant-design-colors",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "bench": "vitest bench",
-    "coverage": "npm test -- --coverage",
-    "compile": "father build",
-    "lint": "eslint src --ext .ts",
-    "prepare": "tsx generate-presets",
-    "prepublishOnly": "npm run compile && rc-np",
-    "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
-    "test": "jest"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "check": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@ant-design/fast-color": "^3.0.0"
+    "@ant-design/colors": "^7.2.1",
+    "@ant-design/fast-color": "^3.0.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.511.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.3.0",
+    "sonner": "^2.0.2",
+    "tailwind-merge": "^3.0.2",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@ctrl/tinycolor": "^3.6.1",
-    "@rc-component/father-plugin": "^2.0.4",
-    "@rc-component/np": "^1.0.0",
-    "@types/jest": "^26.0.24",
-    "@types/node": "^20.14.9",
-    "@umijs/fabric": "^3.0.0",
-    "eslint": "^7.32.0",
-    "father": "^4.4.4",
-    "jest": "^26.6.3",
-    "prettier": "^2.8.8",
-    "ts-jest": "^26.5.6",
-    "tsx": "^4.16.1",
-    "typescript": "~5.8.2",
-    "vitest": "^1.6.0"
+    "@eslint/js": "^9.25.0",
+    "@types/node": "^22.15.30",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "babel-plugin-react-dev-locator": "^1.0.0",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5",
+    "vite-plugin-trae-solo-badge": "^1.0.0",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
