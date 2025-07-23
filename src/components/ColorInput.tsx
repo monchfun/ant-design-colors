@@ -7,13 +7,14 @@ interface ColorInputProps {
   value: string;
   onChange: (color: string) => void;
   className?: string;
+  placeholder?: string;
 }
 
 /**
  * 多格式颜色输入组件
  * 支持HSL/RGB/HEX三种格式切换，每个数值都可以精确输入和滑块调节
  */
-export default function ColorInput({ value, onChange, className = '' }: ColorInputProps) {
+export default function ColorInput({ value, onChange, className = '', placeholder }: ColorInputProps) {
   const [colorMode, setColorMode] = useState<ColorMode>('hsl');
   const [hsl, setHsl] = useState({ h: 210, s: 91, l: 50 });
   const [rgb, setRgb] = useState({ r: 22, g: 119, b: 255 });
@@ -325,7 +326,7 @@ export default function ColorInput({ value, onChange, className = '' }: ColorInp
             type="text"
             value={hexValue}
             onChange={handleHexChange}
-            placeholder="#1677FF"
+            placeholder={placeholder || "#1677FF"}
             className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-0 transition-colors duration-200"
           />
         </div>
